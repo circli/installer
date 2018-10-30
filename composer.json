@@ -1,0 +1,35 @@
+{
+    "name": "circli/installer",
+    "type": "composer-plugin",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Andreas Sundqvist",
+            "email": "andreas@oak-valley.se"
+        }
+    ],
+    "require": {
+        "php": ">=7.1",
+        "composer-plugin-api": "^1.0"
+    },
+    "require-dev": {
+        "composer/composer": "^1.6",
+        "phpunit/phpunit": "^7.2"
+    },
+    "autoload":{
+        "psr-4": {
+            "Circli\\Installer\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Circli\\Installer\\Tests\\": "tests/src/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "class": "Circli\\Installer\\Plugin"
+    }
+}
