@@ -49,6 +49,7 @@ class ExtensionInstaller extends AbstractInstaller implements EventSubscriberInt
     {
         $extensionConfig = new PhpArrayFile('config/extensions.php');
         $packages = $this->composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
+        $configEventHandler = new ConfigInstallerEvent();
 
         foreach ($packages as $package) {
             if ($package->getType() !== self::PACKAGE_TYPE) {
@@ -60,22 +61,22 @@ class ExtensionInstaller extends AbstractInstaller implements EventSubscriberInt
             if (!$packageComposerFile->exists()) {
                 continue;
             }
-
             $packageComposer = $packageComposerFile->read();
-
             $extension = $namespace = null;
             if (isset($packageComposer['autoload']['psr-4'])) {
-                $namespace = array_shift($packageComposer['autoload']['psr-4']);
+                $namespace = key($packageComposer['autoload']['psr-4']);
             }
             if ($namespace) {
-                $extension = $namespace . '\\Extension';
+                $extension = $namespace . '\Extension';
             }
             if (isset($packageComposer['extra']['circli']['extension'])) {
                 $extension = $packageComposer['extra']['circli']['extension'];
             }
             if ($extension) {
-                $extensionConfig[] = $extension;
+                $extensionConfig[$package->getPrettyName()] = $extension;
             }
+
+            $configEventHandler($package, $installedPath, $packageComposerFile);
         }
         $extensionConfig->save();
     }

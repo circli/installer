@@ -49,6 +49,7 @@ class ModuleInstaller extends AbstractInstaller implements EventSubscriberInterf
     {
         $moduleConfig = new PhpArrayFile('config/modules.php');
         $packages = $this->composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
+        $configEventHandler = new ConfigInstallerEvent();
 
         foreach ($packages as $package) {
             if ($package->getType() !== self::PACKAGE_TYPE) {
@@ -77,6 +78,8 @@ class ModuleInstaller extends AbstractInstaller implements EventSubscriberInterf
             if ($module) {
                 $moduleConfig[] = $module;
             }
+
+            $configEventHandler($package, $installedPath, $packageComposerFile);
         }
         $moduleConfig->save();
     }
