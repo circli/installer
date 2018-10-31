@@ -2,7 +2,6 @@
 
 namespace Circli\Installer\Installers;
 
-use Circli\Installer\PhpArrayFile;
 use Circli\Installer\PhpFile;
 use Composer\Json\JsonFile;
 use Composer\Package\PackageInterface;
@@ -14,10 +13,15 @@ class ConfigInstallerEvent
         if (!file_exists($packageDirectory. '/config')) {
             return;
         }
-        $configFile = new PhpFile('config/'.$package->getName().'.php');
 
-        foreach (glob("$packageDirectory/config/*.php") as $filename) {
-            $configFile->addInclude($filename);
+        [$packageNs, $name] = explode('/', $package->getName());
+        if (!file_exists('config/'.$packageNs)) {
+            /** @noinspection MkdirRaceConditionInspection */
+            mkdir('config/'.$packageNs);
+        }
+        $configFile = new PhpFile('config/'.$package->getName().'.php');
+        foreach (glob($packageDirectory . "config/*.php") as $filename) {
+            $configFile->addInclude('../../' . $filename);
         }
 
         $configFile->replaceConfigMerge();

@@ -27,7 +27,7 @@ class PhpFile implements \ArrayAccess
     public function __construct($filePath, bool $autoCreate = true)
     {
         if ($autoCreate && !file_exists($filePath)) {
-            file_put_contents($filePath, "<?php\n");
+            file_put_contents($filePath, "<?php\n ");
         }
 
         $this->setFile($filePath);
@@ -159,7 +159,13 @@ class PhpFile implements \ArrayAccess
 
         $statement = '$include' . $includeCount . " = include('$file');";
 
-        array_splice($this->fileContent, $insertIndex, 0, $statement);
+        if (!isset($this->fileContent[$insertIndex])) {
+            $this->fileContent[] = $statement;
+        }
+        else {
+            array_splice($this->fileContent, $insertIndex, 0, $statement);
+        }
+
     }
 
     public function getIncludes(): array
@@ -167,7 +173,7 @@ class PhpFile implements \ArrayAccess
         $includes = [];
         foreach ($this->fileContent as $index => $line) {
             if (strpos($line, 'include(')) {
-                preg_match('/(\$\w+)(\s+)?=(\s+)?include[\( ][\'\"]([\_\-\w.]+)[\'\"]/', $line, $match);
+                preg_match('/(\$\w+)(\s+)?=(\s+)?include[\( ][\'\"]([\_\-\w.\/]+)[\'\"]/', $line, $match);
                 $includes[$match[1]] = $match[4];
                 continue;
             }
@@ -214,6 +220,7 @@ class PhpFile implements \ArrayAccess
         }
 
         if ($index === -1) {
+            $this->fileContent[] = $statement;
             return;
         }
 
@@ -227,6 +234,6 @@ class PhpFile implements \ArrayAccess
                 return;
             }
         }
-        $this->fileContent[] = 'return $'.$variable;
+        $this->fileContent[] = 'return $'.$variable.';';
     }
 }
