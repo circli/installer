@@ -66,7 +66,7 @@ class ModuleInstaller extends AbstractInstaller implements EventSubscriberInterf
 
             $module = $namespace = null;
             if (isset($packageComposer['autoload']['psr-4'])) {
-                $namespace = array_shift($packageComposer['autoload']['psr-4']);
+                $namespace = rtrim(key($packageComposer['autoload']['psr-4']), '\\');
             }
             if ($namespace) {
                 $module = $namespace . '\\Module';

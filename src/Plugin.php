@@ -2,7 +2,6 @@
 
 namespace Circli\Installer;
 
-
 use Circli\Installer\Installers\ExtensionInstaller;
 use Circli\Installer\Installers\ModuleInstaller;
 use Composer\Composer;

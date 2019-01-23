@@ -64,7 +64,7 @@ class ExtensionInstaller extends AbstractInstaller implements EventSubscriberInt
             $packageComposer = $packageComposerFile->read();
             $extension = $namespace = null;
             if (isset($packageComposer['autoload']['psr-4'])) {
-                $namespace = key($packageComposer['autoload']['psr-4']);
+                $namespace = rtrim(key($packageComposer['autoload']['psr-4']), '\\');
             }
             if ($namespace) {
                 $extension = $namespace . '\Extension';

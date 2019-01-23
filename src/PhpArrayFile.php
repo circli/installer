@@ -127,7 +127,14 @@ class PhpArrayFile implements \ArrayAccess
      */
     public function offsetSet($offset, $value)
     {
-        $this->fileContent[$offset] = $value;
+        if ($offset === null) {
+            if (!in_array($value, $this->fileContent, true)) {
+                $this->fileContent[] = $value;
+            }
+        }
+        else {
+            $this->fileContent[$offset] = $value;
+        }
     }
 
     /**

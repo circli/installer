@@ -151,6 +151,11 @@ class PhpFile implements \ArrayAccess
                 $insertIndex = $index + 1;
                 continue;
             }
+            if (strpos($line, 'array_merge(')) {
+                $insertIndex = $index;
+                break;
+            }
+
             if (strpos($line, 'return ') === 0) {
                 $insertIndex = $index;
                 break;
@@ -173,8 +178,15 @@ class PhpFile implements \ArrayAccess
         $includes = [];
         foreach ($this->fileContent as $index => $line) {
             if (strpos($line, 'include(')) {
-                preg_match('/(\$\w+)(\s+)?=(\s+)?include[\( ][\'\"]([\_\-\w.\/]+)[\'\"]/', $line, $match);
-                $includes[$match[1]] = $match[4];
+                $rs = preg_match('/(\$\w+)(\s+)?=(\s+)?include[\( ]((\s+)?__DIR__(\s+)?.(\s+)?)?[\'\"]([\_\-\w.\/]+)[\'\"]/', $line, $match);
+                if ($rs) {
+                    $dir = '';
+                    if ($match[4]) {
+                        $dir = $match[4];
+                    }
+
+                    $includes[$match[1]] =  $dir . $match [8];
+                }
                 continue;
             }
             if (strpos($line, 'return ') === 0) {
@@ -196,7 +208,7 @@ class PhpFile implements \ArrayAccess
         $returnIndex = -1;
 
         foreach ($this->fileContent as $index => $line) {
-            if (strpos($line, '$mergeConfig') === 0) {
+            if (strpos($line, '$mergeConfig ') === 0) {
                 $mergeIndex = $index;
                 continue;
             }
@@ -208,7 +220,12 @@ class PhpFile implements \ArrayAccess
 
         $includes = $this->getIncludes();
 
-        $statement = '$mergeConfig = array_merge('.implode(', ', array_keys($includes)).');';
+        if (count($includes)) {
+            $statement = '$mergeConfig = array_merge('.implode(', ', array_keys($includes)).');';
+        }
+        else {
+            return;
+        }
 
         $index = -1;
         $length = 0;
