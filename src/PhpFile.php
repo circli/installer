@@ -162,7 +162,7 @@ class PhpFile implements \ArrayAccess
             }
         }
 
-        $statement = '$include' . $includeCount . " = include('$file');";
+        $statement = '$include' . $includeCount . " = include(__DIR__ . '/$file');";
 
         if (!isset($this->fileContent[$insertIndex])) {
             $this->fileContent[] = $statement;
