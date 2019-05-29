@@ -221,7 +221,7 @@ class PhpFile implements \ArrayAccess
         $includes = $this->getIncludes();
 
         if (count($includes)) {
-            $statement = '$mergeConfig = array_merge('.implode(', ', array_keys($includes)).');';
+            $statement = '$mergeConfig = array_merge((array)'.implode(', (array)', array_keys($includes)).');';
         }
         else {
             return;
