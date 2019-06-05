@@ -9,7 +9,7 @@ class AssetInstallerEvent
 {
     public function __invoke(PackageInterface $package, string $packageDirectory, JsonFile $packageComposer)
     {
-        $assetPath = $packageDirectory . '/assets';
+        $assetPath = $packageDirectory . 'assets';
 
         if (!file_exists($assetPath)) {
             return;
@@ -31,17 +31,31 @@ class AssetInstallerEvent
 
     private function linkScripts(string $path, string $linkName)
     {
-        symlink($path . '/src', 'assets/scripts/modules/' . $linkName);
+        $target = realpath('assets/scripts/src/modules/') . '/' . $linkName;
+        if (file_exists($target)) {
+            return;
+        }
 
+        symlink(realpath($path . '/src'), $target);
     }
 
     private function linkStyles(string $path, string $linkName)
     {
-        symlink($path, 'assets/styles/modules/' . $linkName);
+        $target = realpath('assets/styles/modules/') . '/' . $linkName;
+        if (file_exists($target)) {
+            return;
+        }
+
+        symlink(realpath($path), $target);
     }
 
     private function linkImages(string $path, string $linkName)
     {
-        symlink($path, 'assets/images/' . $linkName);
+        $target = realpath('assets/images/') . '/' . $linkName;
+        if (file_exists($target)) {
+            return;
+        }
+
+        symlink(realpath($path), $target);
     }
 }
