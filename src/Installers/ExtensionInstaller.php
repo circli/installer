@@ -50,6 +50,7 @@ class ExtensionInstaller extends AbstractInstaller implements EventSubscriberInt
         $extensionConfig = new PhpArrayFile('config/extensions.php');
         $packages = $this->composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
         $configEventHandler = new ConfigInstallerEvent();
+        $assetEventHandler = new AssetInstallerEvent();
 
         foreach ($packages as $package) {
             if ($package->getType() !== self::PACKAGE_TYPE) {
@@ -77,6 +78,7 @@ class ExtensionInstaller extends AbstractInstaller implements EventSubscriberInt
             }
 
             $configEventHandler($package, $installedPath, $packageComposerFile);
+            $assetEventHandler($package, $installedPath, $packageComposerFile);
         }
         $extensionConfig->save();
     }
