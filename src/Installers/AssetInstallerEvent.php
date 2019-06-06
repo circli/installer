@@ -2,6 +2,7 @@
 
 namespace Circli\Installer\Installers;
 
+use Circli\Installer\PhpArrayFile;
 use Composer\Json\JsonFile;
 use Composer\Package\PackageInterface;
 
@@ -17,16 +18,23 @@ class AssetInstallerEvent
 
         [$packageNs, $name] = explode('/', $package->getName());
 
-        $types = ['styles', 'scripts', 'images'];
+        $validTypes = [];
+        $types = ['styles', 'scripts', 'images', 'svg'];
         foreach ($types as $type) {
             $typePath = $assetPath . '/' . $type;
             if (!file_exists($typePath)) {
                 continue;
             }
 
+            $validTypes[] = $type;
+
             $method = 'link' . ucfirst($type);
             $this->$method($typePath, $name);
         }
+
+        $assetConfig = new PhpArrayFile('config/assets.php');
+        $assetConfig[$name] = $validTypes;
+        $assetConfig->save();
     }
 
     private function linkScripts(string $path, string $linkName)
@@ -52,6 +60,16 @@ class AssetInstallerEvent
     private function linkImages(string $path, string $linkName)
     {
         $target = realpath('assets/images/') . '/' . $linkName;
+        if (file_exists($target)) {
+            return;
+        }
+
+        symlink(realpath($path), $target);
+    }
+
+    private function linkSvg(string $path, string $linkName)
+    {
+        $target = realpath('assets/svg/') . '/' . $linkName;
         if (file_exists($target)) {
             return;
         }
