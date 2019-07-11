@@ -43,6 +43,22 @@ class AssetInstallerEvent
         if (file_exists($target)) {
             return;
         }
+        $modulesJson = [];
+        $modulesFile = 'assets/scripts/modules.json';
+        if (file_exists($modulesFile)) {
+            $modulesJson = json_decode(file_get_contents($modulesFile), true);
+        }
+
+        if (file_exists($path . '/module.config.js')) {
+            $modulesJson[$linkName] = $path . '/module.config.js';
+        }
+        else {
+            $modulesJson[$linkName] = [
+                'resolvePath' => $path . '/src',
+            ];
+        }
+
+        file_put_contents($modulesFile, json_encode($modulesJson, JSON_PRETTY_PRINT));
 
         symlink(realpath($path . '/src'), $target);
     }
