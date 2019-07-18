@@ -40,9 +40,6 @@ class AssetInstallerEvent
     private function linkScripts(string $path, string $linkName)
     {
         $target = realpath('assets/scripts/src/modules/') . '/' . $linkName;
-        if (file_exists($target)) {
-            return;
-        }
         $modulesJson = [];
         $modulesFile = 'assets/scripts/modules.json';
         if (file_exists($modulesFile)) {
@@ -53,13 +50,20 @@ class AssetInstallerEvent
             $modulesJson[$linkName] = $path . '/module.config.js';
         }
         else {
-            $modulesJson[$linkName] = [
+            $config = [
                 'resolvePath' => $path . '/src',
             ];
+            if (file_exists($path . '/src/init.js')) {
+                $config['init'] = $linkName . '/init';
+            }
+            $modulesJson[$linkName] = $config;
         }
 
         file_put_contents($modulesFile, json_encode($modulesJson, JSON_PRETTY_PRINT));
 
+        if (file_exists($target)) {
+            return;
+        }
         symlink(realpath($path . '/src'), $target);
     }
 
