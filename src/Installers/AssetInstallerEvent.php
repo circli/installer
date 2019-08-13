@@ -39,7 +39,11 @@ class AssetInstallerEvent
 
     private function linkScripts(string $path, string $linkName)
     {
-        $target = realpath('assets/scripts/src/modules/') . '/' . $linkName;
+        $moduleLinkRoot = realpath('assets/scripts/src/modules/');
+        if ($moduleLinkRoot === false) {
+            throw new \RuntimeException('Script modules folder not found');
+        }
+        $target = $moduleLinkRoot . '/' . $linkName;
         $modulesJson = [];
         $modulesFile = 'assets/scripts/modules.json';
         if (file_exists($modulesFile)) {
@@ -69,7 +73,11 @@ class AssetInstallerEvent
 
     private function linkStyles(string $path, string $linkName)
     {
-        $target = realpath('assets/styles/modules/') . '/' . $linkName;
+        $moduleLinkRoot = realpath('assets/styles/modules/');
+        if ($moduleLinkRoot === false) {
+            throw new \RuntimeException('Styles modules folder not found');
+        }
+        $target = $moduleLinkRoot . '/' . $linkName;
         if (file_exists($target)) {
             return;
         }
