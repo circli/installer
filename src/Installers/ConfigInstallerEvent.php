@@ -31,6 +31,11 @@ class ConfigInstallerEvent
             $baseName = pathinfo($filename, PATHINFO_BASENAME);
             $files[] = $baseName;
             $target = realpath($packageConfigPath) . '/' . $baseName;
+
+            if (is_link($target) && !file_exists($target)) {
+                unlink($target);
+            }
+
             if (!file_exists($target)) {
                 symlink(realpath($filename), $target);
             }
