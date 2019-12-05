@@ -47,6 +47,10 @@ class ModuleInstaller extends AbstractInstaller implements EventSubscriberInterf
 
     public function updateModules(Event $event)
     {
+        if (!is_dir('config')) {
+            return;
+        }
+
         $moduleConfig = new PhpArrayFile('config/modules.php');
         $packages = $this->composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
         $configEventHandler = new ConfigInstallerEvent();

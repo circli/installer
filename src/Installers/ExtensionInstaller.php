@@ -47,6 +47,10 @@ class ExtensionInstaller extends AbstractInstaller implements EventSubscriberInt
 
     public function updateExtension(Event $event)
     {
+        if (!is_dir('config')) {
+            return;
+        }
+
         $extensionConfig = new PhpArrayFile('config/extensions.php');
         $packages = $this->composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
         $configEventHandler = new ConfigInstallerEvent();
