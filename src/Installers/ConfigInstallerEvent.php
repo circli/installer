@@ -37,7 +37,7 @@ class ConfigInstallerEvent
             }
 
             if (!file_exists($target)) {
-                symlink(realpath($filename), $target);
+                symlink('../../../' . $filename, $target);
             }
             $configFile->addInclude('../../' . $filename);
         }
