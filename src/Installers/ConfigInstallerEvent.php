@@ -37,7 +37,12 @@ class ConfigInstallerEvent
             }
 
             if (!file_exists($target)) {
-                symlink('../../../' . $filename, $target);
+                if (defined('PHP_OS_FAMILY') && PHP_OS_FAMILY === 'Windows') {
+                    symlink(realpath($filename), $target);
+                }
+                else {
+                    symlink('../../../' . $filename, $target);
+                }
             }
             $configFile->addInclude('../../' . $filename);
         }
