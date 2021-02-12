@@ -67,7 +67,6 @@ abstract class AbstractInstaller extends LibraryInstaller
     {
         if ($real) {
             return realpath('config/');
-
         }
         return 'config';
     }
@@ -76,7 +75,6 @@ abstract class AbstractInstaller extends LibraryInstaller
     {
         if ($real) {
             return realpath('extensions/');
-
         }
         return 'extensions';
     }
@@ -85,7 +83,6 @@ abstract class AbstractInstaller extends LibraryInstaller
     {
         if ($real) {
             return realpath('modules/');
-
         }
         return 'modules';
     }

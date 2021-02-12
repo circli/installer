@@ -38,7 +38,10 @@ class ConfigInstallerEvent
 
             if (!file_exists($target)) {
                 if (defined('PHP_OS_FAMILY') && PHP_OS_FAMILY === 'Windows') {
-                    symlink(realpath($filename), $target);
+                    $rs = @symlink(realpath($filename), $target);
+                    if (!$rs) {
+                        error_log('Failed to link config: ' . $filename);
+                    }
                 }
                 else {
                     symlink('../../../' . $filename, $target);
