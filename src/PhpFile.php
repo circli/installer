@@ -2,6 +2,8 @@
 
 namespace Circli\Installer;
 
+use ReturnTypeWillChange;
+
 class PhpFile implements \ArrayAccess
 {
     /**
@@ -109,7 +111,7 @@ class PhpFile implements \ArrayAccess
     /**
      * @inheritdoc
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->fileContent[$offset]);
     }
@@ -117,6 +119,7 @@ class PhpFile implements \ArrayAccess
     /**
      * @inheritdoc
      */
+    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->fileContent[$offset];
@@ -125,7 +128,7 @@ class PhpFile implements \ArrayAccess
     /**
      * @inheritdoc
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->fileContent[] = $value;
     }
@@ -133,7 +136,7 @@ class PhpFile implements \ArrayAccess
     /**
      * @inheritdoc
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->fileContent[$offset]);
     }
