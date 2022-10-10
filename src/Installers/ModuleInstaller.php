@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Circli\Installer\Installers;
 
@@ -17,7 +17,7 @@ class ModuleInstaller extends AbstractInstaller implements EventSubscriberInterf
     /**
      * {@inheritDoc}
      */
-    public function supports($packageType)
+    public function supports(string $packageType): bool
     {
         return $packageType === self::PACKAGE_TYPE;
     }
@@ -33,7 +33,7 @@ class ModuleInstaller extends AbstractInstaller implements EventSubscriberInterf
     /**
      * {@inheritDoc}
      */
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             'post-install-cmd' => [
@@ -45,7 +45,7 @@ class ModuleInstaller extends AbstractInstaller implements EventSubscriberInterf
         ];
     }
 
-    public function updateModules(Event $event)
+    public function updateModules(Event $event): void
     {
         if (!is_dir('config')) {
             return;

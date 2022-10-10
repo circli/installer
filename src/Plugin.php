@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Circli\Installer;
 
@@ -13,7 +13,7 @@ use Composer\Plugin\PluginInterface;
 class Plugin implements PluginInterface
 {
     /** @var InstallerInterface[] */
-    private $installers = [];
+    private array $installers = [];
 
     /**
      * Apply plugin modifications to Composer
@@ -21,7 +21,7 @@ class Plugin implements PluginInterface
      * @param Composer $composer
      * @param IOInterface $io
      */
-    public function activate(Composer $composer, IOInterface $io)
+    public function activate(Composer $composer, IOInterface $io): void
     {
         $extra = $composer->getPackage()->getExtra();
 
@@ -47,7 +47,7 @@ class Plugin implements PluginInterface
         }
     }
 
-    public function deactivate(Composer $composer, IOInterface $io)
+    public function deactivate(Composer $composer, IOInterface $io): void
     {
         $installationManager = $composer->getInstallationManager();
         foreach ($this->installers as $installer) {

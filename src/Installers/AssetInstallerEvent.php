@@ -8,7 +8,7 @@ use Composer\Package\PackageInterface;
 
 class AssetInstallerEvent
 {
-    public function __invoke(PackageInterface $package, string $packageDirectory, JsonFile $packageComposer)
+    public function __invoke(PackageInterface $package, string $packageDirectory, JsonFile $packageComposer): void
     {
         $assetPath = $packageDirectory . 'assets';
 
@@ -37,7 +37,7 @@ class AssetInstallerEvent
         $assetConfig->save();
     }
 
-    private function linkScripts(string $path, string $linkName)
+    private function linkScripts(string $path, string $linkName): void
     {
         $moduleLinkRoot = realpath('assets/scripts/src/modules/');
         if ($moduleLinkRoot === false) {
@@ -71,7 +71,7 @@ class AssetInstallerEvent
         symlink(realpath($path . '/src'), $target);
     }
 
-    private function linkStyles(string $path, string $linkName)
+    private function linkStyles(string $path, string $linkName): void
     {
         $moduleLinkRoot = realpath('assets/styles/modules/');
         if ($moduleLinkRoot === false) {
@@ -85,7 +85,7 @@ class AssetInstallerEvent
         symlink(realpath($path), $target);
     }
 
-    private function linkImages(string $path, string $linkName)
+    private function linkImages(string $path, string $linkName): void
     {
         $target = realpath('assets/images/') . '/' . $linkName;
         if (file_exists($target)) {
@@ -95,7 +95,7 @@ class AssetInstallerEvent
         symlink(realpath($path), $target);
     }
 
-    private function linkSvg(string $path, string $linkName)
+    private function linkSvg(string $path, string $linkName): void
     {
         $target = realpath('assets/svg/') . '/' . $linkName;
         if (file_exists($target)) {

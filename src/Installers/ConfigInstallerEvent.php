@@ -9,7 +9,7 @@ use Composer\Package\PackageInterface;
 
 class ConfigInstallerEvent
 {
-    public function __invoke(PackageInterface $package, string $packageDirectory, JsonFile $packageComposer)
+    public function __invoke(PackageInterface $package, string $packageDirectory, JsonFile $packageComposer): void
     {
         if (!file_exists($packageDirectory . '/config')) {
             return;
@@ -55,7 +55,7 @@ class ConfigInstallerEvent
         $packageConfigOptions->save();
 
         $configFile->replaceConfigMerge();
-        $configFile->addReturnStatment('mergeConfig');
+        $configFile->addReturnStatement('mergeConfig');
         $configFile->save();
     }
 }

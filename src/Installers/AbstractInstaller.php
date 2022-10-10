@@ -19,7 +19,7 @@ abstract class AbstractInstaller extends LibraryInstaller
         $type = $package->getType();
 
         $prettyName = $package->getPrettyName();
-        if (strpos($prettyName, '/') !== false) {
+        if (str_contains($prettyName, '/')) {
             [$vendor, $name] = explode('/', $prettyName);
         } else {
             $vendor = '';
@@ -36,7 +36,7 @@ abstract class AbstractInstaller extends LibraryInstaller
      * @param  array $vars
      * @return array
      */
-    public function inflectPackageVars($vars): array
+    public function inflectPackageVars(array $vars): array
     {
         return $vars;
     }
@@ -45,12 +45,12 @@ abstract class AbstractInstaller extends LibraryInstaller
      * Replace vars in a path
      *
      * @param  string $path
-     * @param  array  $vars
+     * @param  mixed[]  $vars
      * @return string
      */
-    protected function templatePath($path, array $vars = array())
+    protected function templatePath($path, array $vars = array()): string
     {
-        if (strpos($path, '{') !== false) {
+        if (str_contains($path, '{')) {
             extract($vars, \EXTR_SKIP);
             preg_match_all('@\{\$([A-Za-z0-9_]*)\}@i', $path, $matches);
             if (!empty($matches[1])) {
@@ -63,7 +63,7 @@ abstract class AbstractInstaller extends LibraryInstaller
         return $path;
     }
 
-    public function getConfigDirectory($real = true)
+    public function getConfigDirectory($real = true): string
     {
         if ($real) {
             return realpath('config/');
@@ -71,7 +71,7 @@ abstract class AbstractInstaller extends LibraryInstaller
         return 'config';
     }
 
-    public function getLibraryDirectory($real = true)
+    public function getLibraryDirectory($real = true): string
     {
         if ($real) {
             return realpath('extensions/');
@@ -79,7 +79,7 @@ abstract class AbstractInstaller extends LibraryInstaller
         return 'extensions';
     }
 
-    public function getModuleDirectory($real = true)
+    public function getModuleDirectory($real = true): string
     {
         if ($real) {
             return realpath('modules/');

@@ -1,8 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Circli\Installer;
-
-use ReturnTypeWillChange;
 
 class PhpFile implements \ArrayAccess
 {
@@ -11,22 +9,20 @@ class PhpFile implements \ArrayAccess
      *
      * @var string
      */
-    private $filePath;
+    private string $filePath;
 
     /**
      * Array containing all lines of the current php file
      *
-     * @var array
+     * @var array<int, string>
      */
-    private $fileContent = [];
+    private array $fileContent = [];
 
     /**
-     * Constructor
-     *
      * @param string $filePath The path to the php file
      * @param bool $autoCreate
      */
-    public function __construct($filePath, bool $autoCreate = true)
+    public function __construct(string $filePath, bool $autoCreate = true)
     {
         if ($autoCreate && !file_exists($filePath)) {
             file_put_contents($filePath, "<?php\n ");
@@ -36,21 +32,17 @@ class PhpFile implements \ArrayAccess
     }
 
     /**
-     * Sets the file
-     *
      * @param string $filePath The path to the php file
      */
-    public function setFile($filePath): void
+    public function setFile(string $filePath): void
     {
-        $this->fileContent = array();
+        $this->fileContent = [];
         $this->filePath = $filePath;
         $this->checkPermissions();
         $this->parse();
     }
 
     /**
-     * Gets the file path
-     *
      * @return string
      */
     public function getFile(): string
@@ -62,7 +54,6 @@ class PhpFile implements \ArrayAccess
      * Permission check
      *
      * @throws \RuntimeException
-     *
      * @return self
      */
     protected function checkPermissions(): self
@@ -80,11 +71,6 @@ class PhpFile implements \ArrayAccess
         return $this;
     }
 
-    /**
-     * Read the array from file
-     *
-     * @return self
-     */
     protected function parse(): self
     {
         $this->fileContent = file($this->getFile(), FILE_IGNORE_NEW_LINES);
@@ -92,12 +78,7 @@ class PhpFile implements \ArrayAccess
         return $this;
     }
 
-    /**
-     * Save to the php file
-     *
-     * @return self
-     */
-    public function save()
+    public function save(): self
     {
         $output = $this->fileContent;
 
@@ -111,7 +92,7 @@ class PhpFile implements \ArrayAccess
     /**
      * @inheritdoc
      */
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->fileContent[$offset]);
     }
@@ -119,8 +100,7 @@ class PhpFile implements \ArrayAccess
     /**
      * @inheritdoc
      */
-    #[ReturnTypeWillChange]
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): ?string
     {
         return $this->fileContent[$offset];
     }
@@ -128,7 +108,7 @@ class PhpFile implements \ArrayAccess
     /**
      * @inheritdoc
      */
-    public function offsetSet($offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->fileContent[] = $value;
     }
@@ -136,30 +116,30 @@ class PhpFile implements \ArrayAccess
     /**
      * @inheritdoc
      */
-    public function offsetUnset($offset): void
+    public function offsetUnset(mixed $offset): void
     {
         unset($this->fileContent[$offset]);
     }
 
-    public function addInclude(string $file)
+    public function addInclude(string $file): void
     {
         $insertIndex = 1;
         $includeCount = 1;
         foreach ($this->fileContent as $index => $line) {
-            if (strpos($line, $file) !== false) {
+            if (str_contains($line, $file)) {
                 return;
             }
-            if (strpos($line, 'include(')) {
+            if (str_contains($line, 'include(')) {
                 $includeCount++;
                 $insertIndex = $index + 1;
                 continue;
             }
-            if (strpos($line, 'array_merge(')) {
+            if (str_contains($line, 'array_merge(')) {
                 $insertIndex = $index;
                 break;
             }
 
-            if (strpos($line, 'return ') === 0) {
+            if (str_starts_with($line, 'return ')) {
                 $insertIndex = $index;
                 break;
             }
@@ -176,6 +156,9 @@ class PhpFile implements \ArrayAccess
 
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getIncludes(): array
     {
         $includes = [];
@@ -192,7 +175,7 @@ class PhpFile implements \ArrayAccess
                 }
                 continue;
             }
-            if (strpos($line, 'return ') === 0) {
+            if (str_starts_with($line, 'return ')) {
                 break;
             }
         }
@@ -200,22 +183,22 @@ class PhpFile implements \ArrayAccess
         return $includes;
     }
 
-    public function addStatment($stmt)
+    public function addStatement(string $stmt): void
     {
         $this->fileContent[] = $stmt;
     }
 
-    public function replaceConfigMerge()
+    public function replaceConfigMerge(): void
     {
         $mergeIndex = -1;
         $returnIndex = -1;
 
         foreach ($this->fileContent as $index => $line) {
-            if (strpos($line, '$mergeConfig ') === 0) {
+            if (str_starts_with($line, '$mergeConfig ')) {
                 $mergeIndex = $index;
                 continue;
             }
-            if (strpos($line, 'return ') === 0) {
+            if (str_starts_with($line, 'return ')) {
                 $returnIndex = $index;
                 break;
             }
@@ -247,10 +230,10 @@ class PhpFile implements \ArrayAccess
         array_splice($this->fileContent, $index, $length, $statement);
     }
 
-    public function addReturnStatment(string $variable)
+    public function addReturnStatement(string $variable)
     {
         foreach ($this->fileContent as $index => $line) {
-            if (strpos($line, 'return ') === 0) {
+            if (str_starts_with($line, 'return ')) {
                 return;
             }
         }

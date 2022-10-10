@@ -1,24 +1,20 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Circli\Installer;
-
-use ReturnTypeWillChange;
 
 class PhpArrayFile implements \ArrayAccess
 {
     /**
      * Full path to the php file
-     *
-     * @var string
      */
-    private $filePath;
+    private string $filePath;
 
     /**
      * Array containing all lines of the current php file
      *
-     * @var array
+     * @var array<int, string>
      */
-    private $fileContent = [];
+    private array $fileContent = [];
 
     /**
      * Constructor
@@ -26,7 +22,7 @@ class PhpArrayFile implements \ArrayAccess
      * @param string $filePath The path to the php file
      * @param bool $autoCreate
      */
-    public function __construct($filePath, bool $autoCreate = true)
+    public function __construct(string $filePath, bool $autoCreate = true)
     {
         if ($autoCreate && !file_exists($filePath)) {
             file_put_contents($filePath, '<?php return [];');
@@ -35,24 +31,14 @@ class PhpArrayFile implements \ArrayAccess
         $this->setFile($filePath);
     }
 
-    /**
-     * Sets the file
-     *
-     * @param string $filePath The path to the php file
-     */
-    public function setFile($filePath): void
+    public function setFile(string $filePath): void
     {
-        $this->fileContent = array();
+        $this->fileContent = [];
         $this->filePath = $filePath;
         $this->checkPermissions();
         $this->parse();
     }
 
-    /**
-     * Gets the file path
-     *
-     * @return string
-     */
     public function getFile(): string
     {
         return $this->filePath;
@@ -62,8 +48,6 @@ class PhpArrayFile implements \ArrayAccess
      * Permission check
      *
      * @throws \RuntimeException
-     *
-     * @return self
      */
     protected function checkPermissions(): self
     {
@@ -80,11 +64,6 @@ class PhpArrayFile implements \ArrayAccess
         return $this;
     }
 
-    /**
-     * Read the array from file
-     *
-     * @return self
-     */
     protected function parse(): self
     {
         $this->fileContent = include $this->getFile();
@@ -92,12 +71,7 @@ class PhpArrayFile implements \ArrayAccess
         return $this;
     }
 
-    /**
-     * Save to the php file
-     *
-     * @return self
-     */
-    public function save()
+    public function save(): self
     {
         $output = var_export($this->fileContent, true);
 
@@ -111,7 +85,7 @@ class PhpArrayFile implements \ArrayAccess
     /**
      * @inheritdoc
      */
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->fileContent[$offset]);
     }
@@ -119,8 +93,7 @@ class PhpArrayFile implements \ArrayAccess
     /**
      * @inheritdoc
      */
-    #[ReturnTypeWillChange]
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): ?string
     {
         return $this->fileContent[$offset];
     }
@@ -128,7 +101,7 @@ class PhpArrayFile implements \ArrayAccess
     /**
      * @inheritdoc
      */
-    public function offsetSet($offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         if ($offset === null) {
             if (!in_array($value, $this->fileContent, true)) {
@@ -143,7 +116,7 @@ class PhpArrayFile implements \ArrayAccess
     /**
      * @inheritdoc
      */
-    public function offsetUnset($offset): void
+    public function offsetUnset(mixed $offset): void
     {
         unset($this->fileContent[$offset]);
     }
